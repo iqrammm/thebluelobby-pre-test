@@ -1,23 +1,19 @@
 import { Module } from '@nestjs/common';
-import { AppEntity } from "./app.entity";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TodosModule } from './modules/todos/todos.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { dataSourceOptions } from 'db/data-source';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: "localhost",
-      port: 5432,
-      username: 'postgres',
-      password: 'password',
-      database: 'tbl_pretest',
-      synchronize: true,
-      entities: [AppEntity],
-      logging: true
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
-    TypeOrmModule.forFeature([AppEntity])
+    TypeOrmModule.forRoot(dataSourceOptions),
+    TodosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
